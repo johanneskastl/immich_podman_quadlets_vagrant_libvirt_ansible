@@ -1,0 +1,55 @@
+---
+- name: Create a Valkey container as a quadlet
+  hosts: all
+  gather_facts: true
+  become: false
+
+  handlers:
+
+    - name: Restart the Valkey service
+      ansible.builtin.service:
+        name: valkey.service
+        state: restarted
+        scope: user
+        daemon_reload: true
+      when:
+        - not valkey_service_started.changed | bool
+
+  tasks:
+
+    - name: Create Valkey container
+      containers.podman.podman_container:
+        state: quadlet
+        name: valkey
+        network: immich
+        image: cgr.dev/chainguard/valkey:latest
+        label:
+          app: immich
+          traefik.enable: "false"
+        quadlet_options:
+          - |
+            [Unit]
+            Description=Valkey container
+
+            [Service]
+            Restart=always
+
+            [Install]
+            WantedBy=default.target
+      notify:
+        - Restart the Valkey service
+
+    - name: Start the Valkey service
+      ansible.builtin.service:
+        name: valkey.service
+        state: started
+        scope: user
+        daemon_reload: true
+      register: valkey_service_started
+
+    - name: Enable the Valkey service
+      ansible.builtin.service:
+        name: valkey.service
+        enabled: true
+        scope: user
+        daemon_reload: true
