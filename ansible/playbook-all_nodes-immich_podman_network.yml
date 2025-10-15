@@ -1,0 +1,33 @@
+---
+- name: Create the immich podman network
+  hosts: all
+  gather_facts: true
+  become: false
+
+  tasks:
+
+    - name: Create the immich podman network
+      containers.podman.podman_network:
+        name: immich
+        state: quadlet
+        quadlet_options:
+          - |
+            Label=app=immich
+            DisableDNS=false
+
+            [Unit]
+            Description=Immich Podman network
+
+    - name: Start the immich-network service
+      ansible.builtin.service:
+        name: immich-network.service
+        state: started
+        scope: user
+        daemon_reload: true
+
+    - name: Enable the immich-network service
+      ansible.builtin.service:
+        name: immich-network.service
+        enabled: true
+        scope: user
+        daemon_reload: true
