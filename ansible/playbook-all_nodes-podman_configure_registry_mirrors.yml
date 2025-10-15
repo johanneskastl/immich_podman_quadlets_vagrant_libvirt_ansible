@@ -1,0 +1,16 @@
+---
+- name: Configure Podman registry mirrors
+  hosts: all
+  gather_facts: true
+  become: false
+
+  tasks:
+
+    - name: Create ~/.config/containers/registries.conf
+      ansible.builtin.copy:
+        dest: /home/vagrant/.config/containers/registries.conf
+        content: |
+          {{ podman_registries_conf }}
+        owner: vagrant
+        group: vagrant
+        mode: '0600'
