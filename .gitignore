@@ -1,0 +1,11 @@
+#
+# Ignore vagrant-related files
+#
+.vagrant
+Vagrantfile.1
+
+# ignore file with Podman credentials
+ansible/group_vars/all/podman_auth_json.yml
+
+# ignore file with Podman registry configuration
+ansible/group_vars/all/podman_registries_conf.yml
