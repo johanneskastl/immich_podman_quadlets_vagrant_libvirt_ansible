@@ -11,7 +11,7 @@ The `main` branch runs just Immich and its related containers (machine-learning,
 Valkey and PostgreSQL). Immich is reachable over port 2283, the exact IP will be
 printed by Ansible during provisioning.
 
-The `traefik` branch runs this setup behind a Traefik reverse proxy, so it will
+This branch runs this setup behind a Traefik reverse proxy, so it will
 be reachable over HTTPS (with a self-signed certificate).
 
 ## Vagrant
@@ -22,9 +22,13 @@ be reachable over HTTPS (with a self-signed certificate).
 1. Make sure the git submodules are fully working by issuing `git submodule init
    && git submodule update`
 1. Run `vagrant up`
-1. Open the URL that Ansible printed out at the end of the provisioning. The URL
-   looks something like `http://192.168.2.13:2283` (where
-   `192.168.2.13` is your VM's IP address).
+1. Open the URL that Ansible printed out at the end of the provisioning (in a
+   private browser window). The URL looks something like
+   `https://immich.192.168.2.13.sslip.io` (where `192.168.2.13` is your VM's IP
+   address).
+1. You should see a warning, as Traefik is using a self-signed certificate, that
+   your browsers does not recognize and trust.
+1. Accept the warning and you should see the default Nginx welcome page.
 1. Party!
 
 ## Cleaning up
