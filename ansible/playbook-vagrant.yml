@@ -67,3 +67,6 @@
 
 - name: Run playbook-all_nodes-postgres_quadlet.yml
   ansible.builtin.import_playbook: playbook-all_nodes-postgres_quadlet.yml
+
+- name: Run playbook-all_nodes-immich_machine-learning_quadlet.yml
+  ansible.builtin.import_playbook: playbook-all_nodes-immich_machine-learning_quadlet.yml
