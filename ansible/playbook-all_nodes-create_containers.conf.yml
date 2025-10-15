@@ -1,0 +1,19 @@
+---
+- name: 'Create ~/.config/containers/containers.conf'
+  hosts: 'all'
+  gather_facts: true
+  become: false
+
+  tasks:
+
+    - name: Create ~/.config/containers/containers.conf
+      ansible.builtin.copy:
+        dest: /home/vagrant/.config/containers/containers.conf
+        content: |
+          [engine]
+          network_cmd_options=["allow_host_loopback=true",]
+          [network]
+          default_rootless_network_cmd="slirp4netns"
+        owner: 'vagrant'
+        group: 'vagrant'
+        mode: '0644'
