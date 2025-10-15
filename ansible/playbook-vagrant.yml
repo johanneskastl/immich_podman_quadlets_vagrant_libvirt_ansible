@@ -77,5 +77,8 @@
 - name: Run playbook-all_nodes-immich_quadlet.yml
   ansible.builtin.import_playbook: playbook-all_nodes-immich_quadlet.yml
 
+- name: Run playbook-all_nodes-traefik_quadlet.yml
+  ansible.builtin.import_playbook: playbook-all_nodes-traefik_quadlet.yml
+
 - name: Run playbook-all_nodes-output_URLs.yml
   ansible.builtin.import_playbook: playbook-all_nodes-output_URLs.yml
