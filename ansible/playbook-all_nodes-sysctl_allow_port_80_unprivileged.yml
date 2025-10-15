@@ -1,0 +1,27 @@
+---
+- name: 'Allow unprivileged processes to listen on port 80 and higher'
+  hosts: 'all'
+  gather_facts: true
+  become: false
+
+  handlers:
+
+    - name: 'Restart the systemd-sysctl.service'
+      ansible.builtin.service:
+        name: 'systemd-sysctl.service'
+        state: 'restarted'
+      become: true
+
+  tasks:
+
+    - name: 'Create /etc/sysctl.d/ip_unprivileged_port_start.conf'
+      ansible.builtin.copy:
+        dest: '/etc/sysctl.d/net.ipv4.ip_unprivileged_port_start.conf'
+        content: |
+          net.ipv4.ip_unprivileged_port_start=80
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+      become: true
+      notify:
+        - 'Restart the systemd-sysctl.service'
