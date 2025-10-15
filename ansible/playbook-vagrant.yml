@@ -64,3 +64,6 @@
 
 - name: Run playbook-all_nodes-valkey_quadlet.yml
   ansible.builtin.import_playbook: playbook-all_nodes-valkey_quadlet.yml
+
+- name: Run playbook-all_nodes-postgres_quadlet.yml
+  ansible.builtin.import_playbook: playbook-all_nodes-postgres_quadlet.yml
