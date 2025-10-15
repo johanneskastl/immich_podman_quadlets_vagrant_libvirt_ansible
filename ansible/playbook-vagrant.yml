@@ -1,0 +1,56 @@
+---
+
+- name: Run playbook-all_nodes-bootstrap_python.yml
+  ansible.builtin.import_playbook: playbook-all_nodes-bootstrap_python.yml
+
+#
+# general configuration
+#
+
+- name: Run playbook-all_nodes-create_a_vimrc.yml
+  ansible.builtin.import_playbook: playbook-all_nodes-create_a_vimrc.yml
+
+- name: Run playbook-all_nodes-install_tmux.yml
+  ansible.builtin.import_playbook: playbook-all_nodes-install_tmux.yml
+
+- name: Run playbook-all_nodes-minimal_tmux_configuration.yml
+  ansible.builtin.import_playbook: playbook-all_nodes-minimal_tmux_configuration.yml
+
+- name: Run playbook-all_nodes-minimal_bashrc.yml
+  ansible.builtin.import_playbook: playbook-all_nodes-minimal_bashrc.yml
+
+#
+# utilities
+#
+
+- name: Run playbook-all_nodes-install_git-core.yml
+  ansible.builtin.import_playbook: playbook-all_nodes-install_git-core.yml
+
+- name: Run playbook-all_nodes-install_curl.yml
+  ansible.builtin.import_playbook: playbook-all_nodes-install_curl.yml
+
+#
+# Podman
+#
+
+- name: Run playbook-all_nodes-install_podman.yml
+  ansible.builtin.import_playbook: playbook-all_nodes-install_podman.yml
+
+- name: Run playbook-all_nodes-sysctl_allow_port_80_unprivileged.yml
+  ansible.builtin.import_playbook: playbook-all_nodes-sysctl_allow_port_80_unprivileged.yml
+
+- name: Run playbook-all_nodes-podman_socket_etc.yml
+  ansible.builtin.import_playbook: playbook-all_nodes-podman_socket_etc.yml
+
+- name: Run playbook-all_nodes-create_containers.conf.yml
+  ansible.builtin.import_playbook: playbook-all_nodes-create_containers.conf.yml
+
+- name: Run playbook-all_nodes-podman_configure_private_registries.yml
+  ansible.builtin.import_playbook: playbook-all_nodes-podman_configure_private_registries.yml
+  when:
+    - podman_auth_json is defined
+
+- name: Run playbook-all_nodes-podman_configure_registry_mirrors.yml
+  ansible.builtin.import_playbook: playbook-all_nodes-podman_configure_registry_mirrors.yml
+  when:
+    - podman_registries_conf is defined
