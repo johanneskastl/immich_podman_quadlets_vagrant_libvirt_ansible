@@ -1,0 +1,85 @@
+---
+- name: Setup Traefik as a quadlet container
+  hosts: all
+  gather_facts: true
+  become: false
+
+  handlers:
+
+    - name: Restart the container services
+      ansible.builtin.service:
+        name: traefik.service
+        state: restarted
+        scope: user
+        daemon_reload: true
+      when:
+        # if acme.json was created, this means this is the first
+        # run and everything will be created for the first time.
+        # In this case it makes no sense to immediately restart
+        # the services.
+        - not acme_json_created.changed | bool
+
+  tasks:
+
+    - name: Touch ~/acme.json
+      ansible.builtin.file:
+        path: ~/acme.json
+        state: touch
+        mode: '0600'
+        modification_time: preserve
+        access_time: preserve
+      register: acme_json_created
+
+    - name: 'Create the Traefik network'
+      containers.podman.podman_network:
+        name: traefik
+        state: quadlet
+        quadlet_options:
+          - |
+            DisableDNS=false
+
+            [Unit]
+            Description=Traefik network
+
+    - name: Create the Traefik container
+      containers.podman.podman_container:
+        state: quadlet
+        name: traefik
+        network: immich
+        image: docker.io/library/traefik:latest
+        publish:
+          - '443:443'
+          - '8080:8080'
+          - '80:80'
+        volumes:
+          - '%h/acme.json:/acme.json:z'
+          - '/run/user/%U/podman/podman.sock:/var/run/docker.sock:z'
+        quadlet_options:
+          - |
+            Exec=--api.dashboard=true \
+              --api.insecure=true \
+              --accesslog=true \
+              --accesslog.format=json \
+              --entrypoints.http.address=":80" \
+              --entrypoints.https.address=":443" \
+              --providers.docker=true
+            SecurityLabelType=container_runtime_t
+
+            [Unit]
+            Description=Traefik reverse proxy container
+
+            [Service]
+            Restart=always
+
+            [Install]
+            WantedBy=default.target
+      notify:
+        - Restart the container services
+
+    - name: Start the services
+      ansible.builtin.systemd:
+        name: traefik.service
+        state: started
+        enabled: true
+        scope: user
+        daemon_reload: true
