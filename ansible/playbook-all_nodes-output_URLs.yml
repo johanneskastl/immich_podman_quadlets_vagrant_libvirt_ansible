@@ -1,0 +1,20 @@
+---
+- name: 'Output the URLs'
+  hosts: 'all'
+  gather_facts: true
+  become: false
+
+  tasks:
+
+    - name: Wait for the URL to be available
+      delegate_to: localhost
+      ansible.builtin.uri:
+        url: "http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:2283"
+      register: result
+      until: result.status == 200
+      retries: 31
+      delay: 10
+
+    - name: 'Immich URL'
+      ansible.builtin.debug:
+        msg: "Your Immich instance is reachable here: http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:2283"
