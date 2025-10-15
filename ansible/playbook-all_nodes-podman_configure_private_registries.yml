@@ -1,0 +1,16 @@
+---
+- name: Configure Podman to authenticate to one or more registries
+  hosts: all
+  gather_facts: true
+  become: false
+
+  tasks:
+
+    - name: Create ~/.config/containers/auth.json
+      ansible.builtin.copy:
+        dest: /home/vagrant/.config/containers/auth.json
+        content: |
+          {{ podman_auth_json }}
+        owner: vagrant
+        group: vagrant
+        mode: '0600'
