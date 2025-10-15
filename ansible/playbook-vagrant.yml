@@ -54,3 +54,10 @@
   ansible.builtin.import_playbook: playbook-all_nodes-podman_configure_registry_mirrors.yml
   when:
     - podman_registries_conf is defined
+
+#
+# Immich
+#
+
+- name: Run playbook-all_nodes-immich_podman_network.yml
+  ansible.builtin.import_playbook: playbook-all_nodes-immich_podman_network.yml
