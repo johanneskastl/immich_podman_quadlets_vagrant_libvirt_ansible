@@ -1,0 +1,73 @@
+---
+- name: Create the Immich container as a quadlet
+  hosts: all
+  gather_facts: true
+  become: false
+
+  handlers:
+
+    - name: Restart the immich service
+      ansible.builtin.service:
+        name: immich.service
+        state: restarted
+        scope: user
+        daemon_reload: true
+      when:
+        - not immich_service_started.changed | bool
+
+  tasks:
+
+    - name: Create immich volume
+      containers.podman.podman_volume:
+        state: quadlet
+        name: immich
+
+    - name: Create immich container
+      containers.podman.podman_container:
+        state: quadlet
+        name: immich
+        network: immich
+        image: ghcr.io/immich-app/immich-server:release
+        label:
+          app: immich
+          traefik.enable: "false"
+        env:
+          DB_HOSTNAME: postgres
+          DB_USERNAME: immich
+          DB_DATABASE_NAME: immich
+          REDIS_HOSTNAME: valkey
+        # use the Podman secret created in the PostgreSQL playbook
+        secrets:
+          - postgres-password,type=env,target=DB_PASSWORD
+        volumes:
+          - 'immich:/data:z'
+          - '/etc/localtime:/etc/localtime:ro'
+        publish:
+          - '2283:2283'
+        quadlet_options:
+          - |
+            [Unit]
+            Description=Immich container
+
+            [Service]
+            Restart=always
+
+            [Install]
+            WantedBy=default.target
+      notify:
+        - Restart the immich service
+
+    - name: Start the immich service
+      ansible.builtin.service:
+        name: immich.service
+        state: started
+        scope: user
+        daemon_reload: true
+      register: immich_service_started
+
+    - name: Enable the immich service
+      ansible.builtin.service:
+        name: immich.service
+        enabled: true
+        scope: user
+        daemon_reload: true
