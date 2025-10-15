@@ -42,8 +42,6 @@
         volumes:
           - 'immich:/data:z'
           - '/etc/localtime:/etc/localtime:ro'
-        publish:
-          - '2283:2283'
         quadlet_options:
           - |
             [Unit]
