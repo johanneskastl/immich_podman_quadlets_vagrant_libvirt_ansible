@@ -42,6 +42,17 @@
         volumes:
           - 'immich:/data:z'
           - '/etc/localtime:/etc/localtime:ro'
+        label:
+          traefik.enable: "true"
+          #
+          traefik.http.routers.immich.rule: Host(`immich.{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}.sslip.io`)
+          traefik.http.routers.immich.entrypoints: http
+          traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
+          traefik.http.routers.immich.middlewares: redirect-to-https
+          #
+          traefik.http.routers.immich-https.rule: Host(`immich.{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}.sslip.io`)
+          traefik.http.routers.immich-https.entrypoints: https
+          traefik.http.routers.immich-https.tls: "true"
         quadlet_options:
           - |
             [Unit]
