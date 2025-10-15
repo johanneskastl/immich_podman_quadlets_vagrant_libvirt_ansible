@@ -26,6 +26,9 @@
 - name: Run playbook-all_nodes-install_git-core.yml
   ansible.builtin.import_playbook: playbook-all_nodes-install_git-core.yml
 
+- name: Run playbook-all_nodes-install_procps.yml
+  ansible.builtin.import_playbook: playbook-all_nodes-install_procps.yml
+
 - name: Run playbook-all_nodes-install_curl.yml
   ansible.builtin.import_playbook: playbook-all_nodes-install_curl.yml
 
