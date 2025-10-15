@@ -1,0 +1,62 @@
+---
+- name: Create the Immich machine-learning container as a quadlet
+  hosts: all
+  gather_facts: true
+  become: false
+
+  handlers:
+
+    - name: Restart the immich-machine-learning service
+      ansible.builtin.service:
+        name: immich-machine-learning.service
+        state: restarted
+        scope: user
+        daemon_reload: true
+      when:
+        - not immich_machine_learning_service_started.changed | bool
+
+  tasks:
+
+    - name: Create immich-machine-learning volume
+      containers.podman.podman_volume:
+        state: quadlet
+        name: immich-machine-learning
+
+    - name: Create immich-machine-learning container
+      containers.podman.podman_container:
+        state: quadlet
+        name: immich-machine-learning
+        network: immich
+        image: ghcr.io/immich-app/immich-machine-learning:release
+        label:
+          app: immich
+          traefik.enable: "false"
+        volumes:
+          - 'immich-machine-learning:/cache:z'
+        quadlet_options:
+          - |
+            [Unit]
+            Description=immich-machine-learning container
+
+            [Service]
+            Restart=always
+
+            [Install]
+            WantedBy=default.target
+      notify:
+        - Restart the immich-machine-learning service
+
+    - name: Start the immich-machine-learning service
+      ansible.builtin.service:
+        name: immich-machine-learning.service
+        state: started
+        scope: user
+        daemon_reload: true
+      register: immich_machine_learning_service_started
+
+    - name: Enable the immich-machine-learning service
+      ansible.builtin.service:
+        name: immich-machine-learning.service
+        enabled: true
+        scope: user
+        daemon_reload: true
