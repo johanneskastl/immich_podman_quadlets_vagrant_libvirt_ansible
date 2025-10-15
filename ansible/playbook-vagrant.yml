@@ -61,3 +61,6 @@
 
 - name: Run playbook-all_nodes-immich_podman_network.yml
   ansible.builtin.import_playbook: playbook-all_nodes-immich_podman_network.yml
+
+- name: Run playbook-all_nodes-valkey_quadlet.yml
+  ansible.builtin.import_playbook: playbook-all_nodes-valkey_quadlet.yml
